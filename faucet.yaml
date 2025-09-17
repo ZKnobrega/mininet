@@ -1,0 +1,17 @@
+# Arquivo de configuração para o FaucET
+vlans:
+    vlan100:
+        vid: 100
+    vlan200:
+        vid: 200
+dps:
+    switch1:
+        dp_id: 0x1 # ID do nosso switch Mininet
+        hardware: "Open vSwitch"
+        interfaces:
+            1:
+                native_vlan: vlan100 # Host 1 (h1) estará na VLAN 100
+            2:
+                native_vlan: vlan200 # Host 2 (h2) estará na VLAN 200
+            3: # Deixe as outras portas livres para futuros hosts
+                #...
