@@ -11,8 +11,8 @@ RUN apt-get update && apt-get install -y \
     python3-pip \
     mininet
 
-# Instala o Ryu e a versão correta do eventlet
-RUN pip3 install ryu 'eventlet==0.33.3'
+# Instala versões específicas do Ryu e suas dependências para garantir compatibilidade
+RUN pip3 install 'ryu==4.34' 'eventlet==0.35.2'
 
 # Define o diretório de trabalho
 WORKDIR /root
