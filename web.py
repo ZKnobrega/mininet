@@ -4,7 +4,6 @@ from pox.lib.util import dpid_to_str
 
 log = core.getLogger()
 
-# A classe que gera o HTML continua a mesma
 class NetworkViewHandler(webcore.BaseHandler):
     def _handle_GET(self):
         self.response.content_type = 'text/html'
@@ -48,15 +47,9 @@ class NetworkViewHandler(webcore.BaseHandler):
         body += "</body></html>"
         self.response.write(body)
 
-# --- A MUDANCA ESTA AQUI ---
-# Esta nova função será chamada QUANDO o servidor web estiver pronto.
 def _web_server_up (event):
-   log.info("Modulo my_web_viewer pronto. Registrando o handler em /network_view...")
-  # Registra nossa página na URL /network_view
+  log.info("Modulo my_web_viewer pronto. Registrando o handler em /network_view...")
   event.server.set_handler("/network_view", NetworkViewHandler)
 
-# A função launch agora apenas "ouve" pelo evento certo.
 def launch ():
-  # Adiciona um "ouvinte" que chamará nossa função _web_server_up
-  # assim que o evento WebServerUp acontecer.
   core.addListener(webcore.WebServerUp, _web_server_up)
