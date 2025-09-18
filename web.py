@@ -51,7 +51,7 @@ class NetworkViewHandler(webcore.BaseHandler):
 # --- A MUDANCA ESTA AQUI ---
 # Esta nova função será chamada QUANDO o servidor web estiver pronto.
 def _web_server_up (event):
-  log.info("Servidor web pronto. Registrando o /network_view...")
+   log.info("Modulo my_web_viewer pronto. Registrando o handler em /network_view...")
   # Registra nossa página na URL /network_view
   event.server.set_handler("/network_view", NetworkViewHandler)
 
