@@ -2,14 +2,13 @@ from pox.core import core
 import pox.web.webcore as webcore
 from pox.lib.util import dpid_to_str
 
-# Obtém o logger para registrar informações, o que é uma boa prática
 log = core.getLogger()
 
+# A classe que gera o HTML continua a mesma
 class NetworkViewHandler(webcore.BaseHandler):
     def _handle_GET(self):
         self.response.content_type = 'text/html'
 
-        # Começa a construir o corpo do HTML
         body = """
         <html>
           <head>
@@ -28,14 +27,12 @@ class NetworkViewHandler(webcore.BaseHandler):
             <h1>Estado da Rede (Visao do Controlador POX)</h1>
         """
 
-        # Acessa o núcleo do OpenFlow para obter a lista de conexões (switches)
         connections = core.openflow.connections
 
         if not connections:
             body += "<p>Nenhum switch conectado no momento.</p>"
         else:
             body += f"<p>Detectado(s) {len(connections)} switch(es).</p>"
-            # Itera sobre cada switch conectado
             for connection in connections.values():
                 dpid_str = dpid_to_str(connection.dpid)
                 body += f"<h2>Switch <span class='dpid'>{dpid_str}</span></h2>"
@@ -44,18 +41,22 @@ class NetworkViewHandler(webcore.BaseHandler):
                     body += "<p>Nao foi possivel obter as portas do switch.</p>"
                 else:
                     body += "<ul>"
-                    # Itera sobre as portas de cada switch
                     for port in connection.features.ports:
                         body += f"<li>Porta <span class='port'>#{port.port_no}</span>: {port.name.decode()}</li>"
                     body += "</ul>"
 
-        body += """
-          </body>
-        </html>
-        """
+        body += "</body></html>"
         self.response.write(body)
 
-def launch():
-    # Renomeamos o manipulador e a URL para serem mais descritivos
-    core.WebServer.set_handler("/network_view", NetworkViewHandler)
-    log.info("Painel da Rede registrado em /network_view")
+# --- A MUDANCA ESTA AQUI ---
+# Esta nova função será chamada QUANDO o servidor web estiver pronto.
+def _web_server_up (event):
+  log.info("Servidor web pronto. Registrando o /network_view...")
+  # Registra nossa página na URL /network_view
+  event.server.set_handler("/network_view", NetworkViewHandler)
+
+# A função launch agora apenas "ouve" pelo evento certo.
+def launch ():
+  # Adiciona um "ouvinte" que chamará nossa função _web_server_up
+  # assim que o evento WebServerUp acontecer.
+  core.addListener(webcore.WebServerUp, _web_server_up)
