@@ -1,21 +1,30 @@
-# Usamos uma base Ubuntu 20.04, que tem compatibilidade total com as ferramentas
-FROM ubuntu:20.04
+# Base ARM64 estável (para Raspberry Pi 3)
+FROM arm64v8/ubuntu:22.04
 
-# Evita perguntas durante a instalação
+# Evita prompts do apt
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Instala todas as dependências do sistema
+# Atualizar pacotes e instalar dependências básicas
 RUN apt-get update && apt-get install -y \
-    git \
-    python3.8 \
-    python3-pip \
-    mininet
+    build-essential git sudo curl wget iproute2 iputils-ping net-tools \
+    python3.9 python3.9-venv python3.9-dev python3-pip \
+    openvswitch-switch openvswitch-common openvswitch-datapath-dkms \
+    && rm -rf /var/lib/apt/lists/*
 
-# Instala versões ultra-específicas do Ryu e suas dependências para garantir 100% de compatibilidade
-RUN pip3 install 'ryu==4.34' 'eventlet==0.33.3' 'greenlet==1.1.2'
+# Criar venv para isolar Ryu
+RUN python3.9 -m venv /opt/ryu-venv
+ENV PATH="/opt/ryu-venv/bin:$PATH"
 
-# Define o diretório de trabalho
-WORKDIR /root
+# Instalar Ryu com versão compatível do eventlet
+RUN pip install --upgrade pip \
+    && pip install "eventlet==0.30.2" ryu
 
-# Comando padrão para iniciar um terminal no ambiente
+# Instalar Mininet (apenas o essencial, sem Wireshark/extra GUI)
+RUN git clone https://github.com/mininet/mininet.git /opt/mininet \
+    && cd /opt/mininet && util/install.sh -fnv
+
+# PATH do Mininet
+ENV PATH="/opt/mininet/bin:$PATH"
+
+# Comando padrão ao iniciar o container
 CMD ["/bin/bash"]
