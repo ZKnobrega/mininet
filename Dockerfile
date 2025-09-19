@@ -1,5 +1,5 @@
 # Base ARM64 estável (para Raspberry Pi 3)
-FROM arm64v8/ubuntu:22.04
+FROM arm64v8/ubuntu:20.04
 
 # Evita prompts do apt
 ENV DEBIAN_FRONTEND=noninteractive
@@ -7,7 +7,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Atualizar pacotes e instalar dependências básicas
 RUN apt-get update && apt-get install -y \
     build-essential git sudo curl wget iproute2 iputils-ping net-tools \
-    python3.9 python3.9-distutils python3.9-full python3-pip \
+    python3.9 python3.9-venv python3.9-dev python3-pip \
     openvswitch-switch openvswitch-common \
     && rm -rf /var/lib/apt/lists/*
 
